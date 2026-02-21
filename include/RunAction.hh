@@ -3,10 +3,8 @@
 
 #include "G4UserRunAction.hh"
 #include "globals.hh"
-#include <fstream>
 
 class DetectorConstruction;
-class EventAction;
 class G4Run;
 
 class RunAction : public G4UserRunAction
@@ -23,7 +21,6 @@ public:
 
 private:
     DetectorConstruction* fDetector;
-    std::ofstream fOutFile;
 };
 
 #endif
