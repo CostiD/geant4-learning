@@ -31,10 +31,11 @@ int main(int argc, char** argv)
     physicsList->RegisterPhysics(new G4StepLimiterPhysics());
 
     auto* detector  = new DetectorConstruction();
-    auto* eventAct  = new EventAction();
 
     runManager->SetUserInitialization(detector);
     runManager->SetUserInitialization(physicsList);
+
+    auto* eventAct  = new EventAction();
     runManager->SetUserAction(new PrimaryGeneratorAction());
     runManager->SetUserAction(new RunAction(detector));
     runManager->SetUserAction(eventAct);
