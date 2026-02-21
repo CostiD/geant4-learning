@@ -1,7 +1,7 @@
 //=============================================================================
 // CR-39 Proton Irradiation Simulation
 // 2.5 MeV protons, detector at 3 cm from beam exit
-// Author: PhD candidate simulation — GEANT4 10.7+
+// Author: PhD candidate simulation — GEANT4 11.1 MT
 //=============================================================================
 
 #include "G4RunManagerFactory.hh"
@@ -13,10 +13,7 @@
 #include "G4StepLimiterPhysics.hh"
 
 #include "DetectorConstruction.hh"
-#include "PrimaryGeneratorAction.hh"
-#include "RunAction.hh"
-#include "EventAction.hh"
-#include "SteppingAction.hh"
+#include "ActionInitialization.hh"
 
 int main(int argc, char** argv)
 {
@@ -25,21 +22,14 @@ int main(int argc, char** argv)
 
     auto* runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
-    // Physics: FTFP_BERT with high-precision EM option 4 for low-energy ions
-    auto physicsList = new FTFP_BERT;
+    auto* physicsList = new FTFP_BERT;
     physicsList->ReplacePhysics(new G4EmStandardPhysics_option4());
     physicsList->RegisterPhysics(new G4StepLimiterPhysics());
 
-    auto* detector  = new DetectorConstruction();
-
+    auto* detector = new DetectorConstruction();
     runManager->SetUserInitialization(detector);
     runManager->SetUserInitialization(physicsList);
-
-    auto* eventAct  = new EventAction();
-    runManager->SetUserAction(new PrimaryGeneratorAction());
-    runManager->SetUserAction(new RunAction(detector));
-    runManager->SetUserAction(eventAct);
-    runManager->SetUserAction(new SteppingAction(detector, eventAct));
+    runManager->SetUserInitialization(new ActionInitialization(detector));
 
     G4VisManager* visManager = new G4VisExecutive;
     visManager->Initialize();
@@ -47,8 +37,7 @@ int main(int argc, char** argv)
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
 
     if (argc > 1) {
-        G4String command = "/control/execute ";
-        UImanager->ApplyCommand(command + argv[1]);
+        UImanager->ApplyCommand(G4String("/control/execute ") + argv[1]);
     } else {
         UImanager->ApplyCommand("/control/execute init_vis.mac");
         ui->SessionStart();
