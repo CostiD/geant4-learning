@@ -1,0 +1,4 @@
+# run.mac — batch macro: 50 000 protons at 2.5 MeV on CR-39
+/run/initialize
+/run/printProgress 5000
+/run/beamOn 50000
